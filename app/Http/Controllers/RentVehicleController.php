@@ -9,9 +9,51 @@ use App\Models\User;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Annotations as OA;
 
 class RentVehicleController extends Controller {
     /**
+     * @OA\Get(
+     *     path="/api/vehicles/{id}/rent",
+     *     tags={"Vehicles"},
+     *     summary="Rent a vehicle",
+     *     @OA\Parameter(ref="#/components/parameters/Vehicle--id"),
+     *     @OA\Parameter(
+     *         name="user_id",
+     *         in="query",
+     *         description="Id of User",
+     *         required=true,
+     *         example=1,
+     *         @OA\Schema(
+     *             type="integer",
+     *         ),
+     *     ),
+     *     @OA\Parameter(
+     *         name="comment",
+     *         in="query",
+     *         description="Trip comment",
+     *         required=false,
+     *         example="Grocery shopping trip",
+     *         @OA\Schema(
+     *             type="string",
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 title="data",
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/Trip",
+     *             ),
+     *        ),
+     *     ),
+     *     @OA\Response(response=422, description="Validation exception"),
+     *     @OA\Response(response=404, description="Vehicle not found"),
+     * )
+     *
      * Display a listing of the resource.
      *
      * @param  Vehicle  $vehicle
@@ -38,6 +80,26 @@ class RentVehicleController extends Controller {
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/vehicles/{id}/release",
+     *     tags={"Vehicles"},
+     *     summary="Release a vehicle",
+     *     @OA\Parameter(ref="#/components/parameters/Vehicle--id"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 title="data",
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/Trip"
+     *             ),
+     *        ),
+     *     ),
+     *     @OA\Response(response=422, description="Validation exception"),
+     *     @OA\Response(response=404, description="Vehicle not found"),
+     * )
      * Display a listing of the resource.
      *
      * @param  Vehicle  $vehicle

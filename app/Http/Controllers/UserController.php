@@ -8,9 +8,21 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Response;
+use OpenApi\Annotations as OA;
 
 class UserController extends Controller {
     /**
+     * @OA\Get(
+     *     path="/api/users",
+     *     tags={"Users"},
+     *     summary="Get list of User",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Users"),
+     *     ),
+     * )
+     *
      * Display a listing of the resource.
      *
      * @return UserCollection
@@ -20,6 +32,33 @@ class UserController extends Controller {
     }
 
     /**
+     * @OA\Post(
+     *     summary="Insert a new User",
+     *     tags={"Users"},
+     *     path="/api/users",
+     *     @OA\RequestBody(
+     *         description="User to create",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="201",
+     *         description="Product created",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 title="data",
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/User"
+     *             ),
+     *         ),
+     *     ),
+     *     @OA\Response(response=422, description="Validation exception"),
+     * )
+     *
      * Store a newly created resource in storage.
      *
      * @param  \App\Http\Requests\StoreUserRequest  $request
@@ -32,6 +71,26 @@ class UserController extends Controller {
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/users/{id}",
+     *     tags={"Users"},
+     *     summary="Get User by id",
+     *     @OA\Parameter(ref="#/components/parameters/User--id"),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 title="data",
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/User"
+     *             ),
+     *        ),
+     *     ),
+     *     @OA\Response(response=404, description="User not found"),
+     * )
+     *
      * Display the specified resource.
      *
      * @param  \App\Models\User  $user
@@ -43,6 +102,35 @@ class UserController extends Controller {
     }
 
     /**
+     * @OA\Put(
+     *     path="/api/users/{id}",
+     *     tags={"Users"},
+     *     summary="Updates a User",
+     *     @OA\Parameter(ref="#/components/parameters/User--id"),
+     *     @OA\RequestBody(
+     *         description="User to create",
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 title="data",
+     *                 property="data",
+     *                 type="object",
+     *                 ref="#/components/schemas/User"
+     *             ),
+     *        ),
+     *     ),
+     *     @OA\Response(response=404, description="User not found"),
+     *     @OA\Response(response=422, description="Validation exception"),
+     * )
+     *
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateUserRequest  $request
@@ -56,6 +144,15 @@ class UserController extends Controller {
     }
 
     /**
+     * @OA\Delete(
+     *     path="/api/users/{id}",
+     *     tags={"Users"},
+     *     summary="Delete a User",
+     *     @OA\Parameter(ref="#/components/parameters/User--id"),
+     *     @OA\Response(response=204,description="No content"),
+     *     @OA\Response(response=404, description="User not found"),
+     * )
+     *
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\User  $user
