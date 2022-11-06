@@ -20,6 +20,7 @@ class RentVehicleControllerTest extends TestCase {
              ->assertJsonStructure(['data']);
 
         $this->json('get', route('vehicles.rent', [$vehicle->id]), ['user_id' => $user->id])
+             ->assertUnprocessable()
              ->assertJsonStructure(['message']);
 
         $this->json('get', route('vehicles.release', [$vehicle->id]))
@@ -27,6 +28,7 @@ class RentVehicleControllerTest extends TestCase {
              ->assertJsonStructure(['data']);
 
         $this->json('get', route('vehicles.release', [$vehicle->id]))
+             ->assertUnprocessable()
              ->assertJsonStructure(['message']);;
     }
 
