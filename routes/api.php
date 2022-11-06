@@ -29,3 +29,6 @@ Route::apiResources([
     'users.trips'    => UserTripController::class,
     'vehicles.trips' => VehicleTripController::class,
 ], ['only' => ['index', 'show']]);
+
+Route::get('/vehicles/{vehicle}/rent', [RentVehicleController::class, 'rent'])->name('vehicles.rent');
+Route::get('/vehicles/{vehicle}/release', [RentVehicleController::class, 'release'])->name('vehicles.release');
