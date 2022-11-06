@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\RentVehicleController;
+use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserTripController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleTripController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,3 +23,9 @@ Route::apiResources([
     'users'    => UserController::class,
     'vehicles' => VehicleController::class,
 ]);
+
+Route::apiResources([
+    'trips'          => TripController::class,
+    'users.trips'    => UserTripController::class,
+    'vehicles.trips' => VehicleTripController::class,
+], ['only' => ['index', 'show']]);

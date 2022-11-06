@@ -18,4 +18,12 @@ class Vehicle extends Model
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    public function unFinishedTrips() {
+        return $this->hasMany(Trip::class)->whereNull('finish_at');
+    }
+
+    public function trips() {
+        return $this->hasMany(Trip::class);
+    }
 }
