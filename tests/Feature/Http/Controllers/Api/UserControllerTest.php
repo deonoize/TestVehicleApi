@@ -1,115 +1,77 @@
 <?php
 
-namespace Http\Controllers\Api;
+namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Models\User;
-use Tests\TestCase;
+use Tests\ApiControllerTest;
+use Tests\Traits\ApiDestroyControllerTest;
+use Tests\Traits\ApiIndexControllerTest;
+use Tests\Traits\ApiShowControllerTest;
+use Tests\Traits\ApiStoreControllerTest;
+use Tests\Traits\ApiUpdateControllerTest;
 
-class UserControllerTest extends TestCase {
-    public function testIndexReturnsDataInValidFormat() {
-        User::factory(2)->create();
-        $this->json('get', 'api/users')
-             ->assertOk()
-             ->assertJsonStructure(
-                 [
-                     'data' => [
-                         '*' => [
-                             'id',
-                             'name',
-                             'email',
-                             'created_at',
-                             'updated_at',
-                         ],
-                     ],
-                 ]
-             );
+class UserControllerTest extends ApiControllerTest {
+    use ApiIndexControllerTest,
+        ApiShowControllerTest,
+        ApiStoreControllerTest,
+        ApiUpdateControllerTest,
+        ApiDestroyControllerTest;
+
+    public function getModel(): string {
+        return User::class;
     }
 
-    public function testUserIsCreatedSuccessfully() {
-        $payload = User::factory()->make()->getAttributes();
-        $this->json('post', 'api/users', $payload)
-             ->assertCreated()
-             ->assertJsonStructure(
-                 [
-                     'data' => [
-                         'id',
-                         'name',
-                         'email',
-                         'created_at',
-                         'updated_at',
-                     ],
-                 ]
-             );
-        $this->assertDatabaseHas('users', $payload);
+    public function getRoute(): string {
+        return 'users';
     }
 
-    public function testUserIsShownCorrectly() {
-        $user = User::factory()->create();
-        $this->json('get', "api/users/$user->id")
-             ->assertOk()
-             ->assertExactJson(
-                 [
-                     'data' => [
-                         'id'         => $user->id,
-                         'name'       => $user->name,
-                         'email'      => $user->email,
-                         'created_at' => (string) $user->created_at,
-                         'updated_at' => (string) $user->updated_at,
-                     ],
-                 ]
-             );
+    public function getJsonStructureForIndex(): array {
+        return [
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'email',
+                    'created_at',
+                    'updated_at',
+                ],
+            ],
+        ];
     }
 
-    public function testUserIsDestroyed() {
-        $data = User::factory()->make()->getAttributes();
-        $user = User::create($data);
-        $this->json('delete', "api/users/$user->id")
-             ->assertNoContent();
-        $this->assertDatabaseMissing('users', $data);
+    public function getJsonStructureForStore(): array {
+        return [
+            'data' => [
+                'id',
+                'name',
+                'email',
+                'created_at',
+                'updated_at',
+            ],
+        ];
     }
 
-    public function testUpdateUserReturnsCorrectData() {
-        $user = User::factory()->create();
-        $payload = User::factory()->make()->getAttributes();
-        $this->json('put', "api/users/$user->id", $payload)
-             ->assertOk()
-             ->assertExactJson(
-                 [
-                     'data' => [
-                         'id'         => $user->id,
-                         'name'       => $payload['name'],
-                         'email'      => $payload['email'],
-                         'created_at' => (string) $user->created_at,
-                         'updated_at' => (string) $user->refresh()->updated_at,
-                     ],
-                 ]
-             );
+    public function getJsonForShow($entity): array {
+        return [
+            'id'         => $entity->id,
+            'name'       => $entity->name,
+            'email'      => $entity->email,
+            'created_at' => (string) $entity->created_at,
+            'updated_at' => (string) $entity->updated_at,
+        ];
     }
 
-    public function testShowForMissingUser() {
-        $this->json('get', "api/users/0")
-             ->assertNotFound()
-             ->assertJsonStructure(['message']);
+    public function getJsonForUpdate($entity, $payload): array {
+        return [
+            'id'         => $entity->id,
+            'name'       => $payload['name'],
+            'email'      => $payload['email'],
+            'created_at' => (string) $entity->created_at,
+            'updated_at' => (string) $entity->refresh()->updated_at,
+        ];
     }
 
-    public function testUpdateForMissingUser() {
-        $payload = User::factory()->make()->getAttributes();
-        $this->json('put', 'api/users/0', $payload)
-             ->assertNotFound()
-             ->assertJsonStructure(['message']);
-    }
-
-    public function testDestroyForMissingUser() {
-        $this->json('delete', 'api/users/0')
-             ->assertNotFound()
-             ->assertJsonStructure(['message']);
-    }
-
-    public function testStoreWithMissingData() {
-        $payload = User::factory()->make()->getAttributes();
+    public function changeForMissingData(&$payload): void {
         unset($payload['email']);
-        $this->json('post', 'api/users', $payload)
-             ->assertUnprocessable()
-             ->assertJsonStructure(['message', 'errors' => ['*' => []]]);
     }
 }
